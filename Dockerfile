@@ -6,11 +6,11 @@
 FROM node:4.2.3
 MAINTAINER Mainflux
 
-ENV MAINFLUX_PORT=7070
+ENV MAINFLUX_HTTP_PORT=7070
 
 RUN apt-get update -qq && apt-get install -y build-essential
 
-RUN mkdir /mainflux
+RUN mkdir /mainflux-http
 
 ###
 # Installations
@@ -21,11 +21,11 @@ RUN npm install -g gulp
 RUN npm install -g nodemon
 
 # Finally, install all project Node modules
-COPY . /mainflux
-WORKDIR /mainflux
+COPY . /mainflux-http
+WORKDIR /mainflux-http
 RUN npm install
 
-EXPOSE $MAINFLUX_PORT
+EXPOSE $MAINFLUX_HTTP_PORT
 
 ###
 # Run main command from entrypoint and parameters in CMD[]
