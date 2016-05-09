@@ -13,11 +13,11 @@ function routes(api) {
     /**
      * /DEVICES
      */
-    /** Create a device (accessed at POST http://localhost:8080/devices) */
+    /** Create a device (accessed at POST http://localhost:7070/devices) */
     api.post('/devices', devicesController.createDevice);
 
-    /** Get all the devices (accessed at GET http://localhost:8080/devices) */
-    api.get('/devices', devicesController.getAllDevices);
+    /** Get all the devices (accessed at GET http://localhost:7070/devices) */
+    api.get('/devices', devicesController.getDevices);
 
     /**
      * /devices/:device_id
