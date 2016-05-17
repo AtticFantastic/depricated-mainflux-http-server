@@ -6,7 +6,7 @@ var log = require('../logger');
 
 var os = require('os');
 
-var nats = require('nats').connect();
+var nats = require('nats').connect('nats://' + config.nats.host + ':' + config.nats.port);
 
 /** createDevice() */
 exports.createDevice = function(req, res, next) {
