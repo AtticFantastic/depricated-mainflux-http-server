@@ -17,16 +17,17 @@ exports.createDevice = function(req, res, next) {
     /** Save the device and check for errors */
     console.log("createDevice()");
 
-    // Request with Auto-Unsubscribe. Will unsubscribe after
-    // the first response is received via {'max':1}
+    /**
+     * Request with Auto-Unsubscribe. Will unsubscribe after
+     * the first response is received via {'max':1}
+     */
     var msg = {};
     msg.method = 'createDevice';
-    //msg.params = [deviceName];
+    msg.body = req.body;
 
     nats.request('core_in', JSON.stringify(msg), {'max':1}, function(rsp) {
-        console.log('Got a response for `createDevice`: ' + rsp);
-
-        res.send(rsp);
+        /** Recieved message from NATS is string type, we need to convert it to JSON */
+        res.json(JSON.parse(rsp));
         return next();
     });
 }
@@ -40,11 +41,11 @@ exports.getDevices = function(req, res, next) {
 
     var msg = {};
     msg.method = 'getDevices';
+    msg.body = req.body;
 
     nats.request('core_in', JSON.stringify(msg), {'max':1}, function(rsp) {
         console.log('Got a response for `getAllDevices`: ' + rsp);
-
-        res.send(rsp);
+        res.json(JSON.parse(rsp));
         return next();
     });
 }
@@ -54,14 +55,22 @@ exports.getDevice = function(req, res, next) {
 
     console.log("getDevice()");
 
+    if (req.body === '') {
+        req.body = {
+            'deviceId' : req.params.device_id
+        };
+    }
+
+    console.log(req.params.device_id);
+    console.log(req.body.deviceId);
+
     var msg = {};
     msg.method = 'getDevice';
-    //msg.params = [deviceId];
+    msg.body = req.body;
 
     nats.request('core_in', JSON.stringify(msg), {'max':1}, function(rsp) {
         console.log('Got a response for getDevice: ' + rsp);
-
-        res.send(rsp);
+        res.json(JSON.parse(rsp));
         return next();
     });
 }
@@ -71,14 +80,22 @@ exports.updateDevice = function(req, res, next) {
     
     console.log("updateDevice()");
 
+    /**
+     * `deviceId` is always given by REST param.
+     * Write it in JSON payload to:
+     *    a) Pass the infor through the NATS
+     *    b) Overwrite it if present in JSON payload - it is RO for the user,
+     *       so this prevents user in passing it in the UPDATE body and changing it
+     */
+    req.body.deviceId = req.params.device_id
+
     var msg = {};
     msg.method = 'updateDevice';
-    //msg.params = [deviceId, attribute, value];
+    msg.body = req.body;
 
     nats.request('core_in', JSON.stringify(msg), {'max':1}, function(rsp) {
         console.log('Got a response for updateDevice: ' + rsp);
-
-        res.send(rsp);
+        res.json(JSON.parse(rsp));
         return next();
     });
 }
@@ -87,15 +104,20 @@ exports.updateDevice = function(req, res, next) {
 exports.deleteDevice = function(req, res, next) {
 
     console.log("deleteDevice()");
+    
+    if (req.body === '') {
+        req.body = {
+            'deviceId' : req.params.device_id
+        };
+    }
 
     var msg = {};
     msg.method = 'deleteDevice';
-    //msg.params = [deviceId];
+    msg.body = req.body;
 
     nats.request('core_in', JSON.stringify(msg), {'max':1}, function(rsp) {
         console.log('Got a response for deleteDevice: ' + rsp);
-
-        res.send(rsp);
+        res.json(JSON.parse(rsp));
         return next();
     });
 }
