@@ -24,7 +24,7 @@ exports.createDevice = function(req, res, next) {
     var msg = {};
     msg.method = 'createDevice';
     msg.body = req.body;
-
+    
     nats.request('core_in', JSON.stringify(msg), {'max':1}, function(rsp) {
         /** Recieved message from NATS is string type, we need to convert it to JSON */
         res.json(JSON.parse(rsp));
@@ -57,12 +57,12 @@ exports.getDevice = function(req, res, next) {
 
     if (req.body === '') {
         req.body = {
-            'deviceId' : req.params.device_id
+            'id' : req.params.device_id
         };
     }
 
     console.log(req.params.device_id);
-    console.log(req.body.deviceId);
+    console.log(req.body.id);
 
     var msg = {};
     msg.method = 'getDevice';
@@ -81,13 +81,13 @@ exports.updateDevice = function(req, res, next) {
     console.log("updateDevice()");
 
     /**
-     * `deviceId` is always given by REST param.
+     * `id` is always given by REST param.
      * Write it in JSON payload to:
      *    a) Pass the infor through the NATS
      *    b) Overwrite it if present in JSON payload - it is RO for the user,
      *       so this prevents user in passing it in the UPDATE body and changing it
      */
-    req.body.deviceId = req.params.device_id
+    req.body.id = req.params.device_id
 
     var msg = {};
     msg.method = 'updateDevice';
@@ -107,7 +107,7 @@ exports.deleteDevice = function(req, res, next) {
     
     if (req.body === '') {
         req.body = {
-            'deviceId' : req.params.device_id
+            'id' : req.params.device_id
         };
     }
 
